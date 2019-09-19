@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <cstdio>
@@ -429,7 +429,5 @@ int main(int argc, char **argv)
 	output << "]" << endl;
 	input.close();
 	output.close();
-	
-	
-	return 0;
+		return 0;
 }
