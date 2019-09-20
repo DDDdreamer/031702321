@@ -402,7 +402,7 @@ int main(int argc, char **argv)
 		wstring name = name_seperate();
 		wstring tel_number = Tel_num_analysis();
 		wstring t1 = L"1!",t2 = L"2!";
-		if (type.find==t1)
+		if (type==t1)
 		{
 			Five_addr_analysis add_analysis(name, tel_number); //创建五级地址对象
 			add_analysis.info_collect();
@@ -422,7 +422,7 @@ int main(int argc, char **argv)
 				output << inf << endl;
 			}
 		}
-		else if (type.find==t2)
+		else if (type==t2)
 		{
 			Seven_addr_analysis add_analysis(name, tel_number);//创建七级地址对象
 			add_analysis.info_collect();
