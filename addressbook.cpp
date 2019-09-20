@@ -5,210 +5,213 @@
 #include <string>
 #include <vector>
 #include <regex>
+#include <codecvt>
+#include "head.h"
 using namespace std;
 
-string addr;	//µØÖ·±äÁ¿
-string direct_city[4] = { "±±¾©ÊÐ","ÉÏº£ÊÐ","Ìì½òÊÐ","ÖØÇìÊÐ" };//Ö±Ï½ÊÐ
-string direct_cities[4][40] = {
-	"³¯ÑôÇø","º£µíÇø","Í¨ÖÝÇø","·¿É½Çø","·áÌ¨Çø","²ýÆ½Çø","´óÐËÇø","Ë³ÒåÇø","Î÷³ÇÇø","ÑÓÇìÏØ","Ê¯¾°É½Çø","ÐûÎäÇø","»³ÈáÇø","³çÎÄÇø","ÃÜÔÆÏØ","¶«³ÇÇø","ÃÅÍ·¹µÇø","Æ½¹ÈÇø","","","","","","","",  "","","","","","","","","","","","","","","",\
-	"ËÉ½­Çø","±¦É½Çø","½ðÉ½Çø","¼Î¶¨Çø","ÄÏ»ãÇø","ÇàÆÖÇø","ÆÖ¶«ÐÂÇø","·îÏÍÇø","ãÉÐÐÇø","Ðì»ãÇø","¾²°²Çø","»ÆÆÖÇø","ÆÕÍÓÇø","ÑîÆÖÇø","ºç¿ÚÇø","Õ¢±±Çø","³¤ÄþÇø","³çÃ÷ÏØ","Â¬ÍåÇø","","","","","","",  "","","","","","","","","","","","","","","",\
-	"ºÍÆ½Çø","±±³½Çø","ºÓ±±Çø","ºÓÎ÷Çø","Î÷ÇàÇø","½òÄÏÇø","¶«ÀöÇø","ÎäÇåÇø","±¦ÛæÇø","ºìÇÅÇø","´ó¸ÛÇø","ºº¹ÁÇø","¾²º£ÏØ","ÄþºÓÏØ","ÌÁ¹ÁÇø","¼»ÏØ","ÄÏ¿ªÇø","ºÓ¶«Çø","","","","","","","", "","","","","","","","","","","","","","","",\
-	"½­±±Çø", "Óå±±Çø", "É³Æº°ÓÇø", "¾ÅÁúÆÂÇø", "ÍòÖÝÇø", "ÓÀ´¨ÊÐ", "ÄÏ°¶Çø", "ÓÏÑôÏØ", "±±íÕÇø", "¸¢ÁêÇø", "ÐãÉ½ÏØ", "°ÍÄÏÇø", "ÓåÖÐÇø", "Ê¯ÖùÏØ", "ÖÒÏØ", "ºÏ´¨ÊÐ", "´ó¶É¿ÚÇø", "¿ªÏØ", "³¤ÊÙÇø", "ÈÙ²ýÏØ", "ÔÆÑôÏØ", "ÁºÆ½ÏØ", "äüÄÏÏØ", "½­½òÊÐ", "ÅíË®ÏØ", "èµÉ½ÏØ", "ôë½­ÏØ", "´ó×ãÏØ", "Ç­½­Çø", "Î×ÏªÏØ", "Î×É½ÏØ", "µæ½­ÏØ", "·á¶¼ÏØ", "ÎäÂ¡ÏØ", "ÍòÊ¢Çø", "Í­ÁºÏØ", "ÄÏ´¨ÊÐ", "·î½ÚÏØ", "Ë«ÇÅÇø", "³Ç¿ÚÏØ"
+wstring addr;	//åœ°å€å˜é‡
+wstring direct_city[4] = { L"åŒ—äº¬å¸‚",L"ä¸Šæµ·å¸‚",L"å¤©æ´¥å¸‚",L"é‡åº†å¸‚" };//ç›´è¾–å¸‚
+wstring direct_cities[4][40] = {
+	L"æœé˜³åŒº",L"æµ·æ·€åŒº",L"é€šå·žåŒº",L"æˆ¿å±±åŒº",L"ä¸°å°åŒº",L"æ˜Œå¹³åŒº",L"å¤§å…´åŒº",L"é¡ºä¹‰åŒº",L"è¥¿åŸŽåŒº",L"å»¶åº†åŽ¿",L"çŸ³æ™¯å±±åŒº",L"å®£æ­¦åŒº",L"æ€€æŸ”åŒº",L"å´‡æ–‡åŒº",L"å¯†äº‘åŽ¿",L"ä¸œåŸŽåŒº",L"é—¨å¤´æ²ŸåŒº",L"å¹³è°·åŒº",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+		L"æ¾æ±ŸåŒº",L"å®å±±åŒº",L"é‡‘å±±åŒº",L"å˜‰å®šåŒº",L"å—æ±‡åŒº",L"é’æµ¦åŒº",L"æµ¦ä¸œæ–°åŒº",L"å¥‰è´¤åŒº",L"é—µè¡ŒåŒº",L"å¾æ±‡åŒº",L"é™å®‰åŒº",L"é»„æµ¦åŒº",L"æ™®é™€åŒº",L"æ¨æµ¦åŒº",L"è™¹å£åŒº",L"é—¸åŒ—åŒº",L"é•¿å®åŒº",L"å´‡æ˜ŽåŽ¿",L"å¢æ¹¾åŒº",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+		L"å’Œå¹³åŒº",L"åŒ—è¾°åŒº",L"æ²³åŒ—åŒº",L"æ²³è¥¿åŒº",L"è¥¿é’åŒº",L"æ´¥å—åŒº",L"ä¸œä¸½åŒº",L"æ­¦æ¸…åŒº",L"å®å»åŒº",L"çº¢æ¡¥åŒº",L"å¤§æ¸¯åŒº",L" æ±‰æ²½åŒº",L"é™æµ·åŽ¿",L"å®æ²³åŽ¿",L"å¡˜æ²½åŒº",L"è“ŸåŽ¿",L"å—å¼€åŒº",L"æ²³ä¸œåŒº",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+		L"æ±ŸåŒ—åŒº",L"æ¸åŒ—åŒº",L"æ²™åªååŒº",L"ä¹é¾™å¡åŒº",L"ä¸‡å·žåŒº",L"æ°¸å·å¸‚",L"å—å²¸åŒº",L"é…‰é˜³åŽ¿",L"åŒ—ç¢šåŒº",L"æ¶ªé™µåŒº",L"ç§€å±±åŽ¿",L"å·´å—åŒº",L"æ¸ä¸­åŒº",L"çŸ³æŸ±åŽ¿",L"å¿ åŽ¿",L"åˆå·å¸‚",L"å¤§æ¸¡å£åŒº",L"å¼€åŽ¿",L"é•¿å¯¿åŒº",L"è£æ˜ŒåŽ¿",L"äº‘é˜³åŽ¿",L"æ¢å¹³åŽ¿",L"æ½¼å—åŽ¿",L"æ±Ÿæ´¥å¸‚",L"å½­æ°´åŽ¿",L"ç’§å±±åŽ¿",L"ç¶¦æ±ŸåŽ¿",L"å¤§è¶³åŽ¿",L"é»”æ±ŸåŒº",L"å·«æºªåŽ¿",
+			L"å·«å±±åŽ¿", L"åž«æ±ŸåŽ¿", L"ä¸°éƒ½åŽ¿", L"æ­¦éš†åŽ¿", L"ä¸‡ç››åŒº", L"é“œæ¢åŽ¿", L"å—å·å¸‚", L"å¥‰èŠ‚åŽ¿", L"åŒæ¡¥åŒº", L"åŸŽå£åŽ¿" };
+wstring provs[23] = { L"æ²³åŒ—çœ",L"å±±è¥¿çœ",L"è¾½å®çœ",L"å‰æž—çœ",L"é»‘é¾™æ±Ÿçœ",L"æ±Ÿè‹çœ",L"æµ™æ±Ÿçœ",L"å®‰å¾½çœ",L"ç¦å»ºçœ",L"æ±Ÿè¥¿çœ",L"å±±ä¸œçœ",L"æ²³å—çœ",L"æ¹–åŒ—çœ",L"æ¹–å—çœ",L"å¹¿ä¸œçœ",L"æµ·å—çœ",L"å››å·çœ",L"è´µå·žçœ",L"äº‘å—çœ",L"é™•è¥¿çœ",L"ç”˜è‚ƒçœ",L"é’æµ·çœ",L"å°æ¹¾çœ" };									//å…¨å›½å„çœ
+wstring cities[23][30] =
+{ L"çŸ³å®¶åº„å¸‚",L"å”å±±å¸‚",L"ä¿å®šå¸‚",L"é‚¯éƒ¸å¸‚",L"é‚¢å°å¸‚",L"æ²³åŒ—åŒº",L"æ²§å·žå¸‚",L"ç§¦çš‡å²›å¸‚",L"å¼ å®¶å£å¸‚",L"è¡¡æ°´å¸‚",L"å»ŠåŠå¸‚",L"æ‰¿å¾·å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"å¤ªåŽŸå¸‚",L"å¤§åŒå¸‚",L"è¿åŸŽå¸‚",L"é•¿æ²»å¸‚",L"æ™‹åŸŽå¸‚",L"å¿»å·žå¸‚",L"ä¸´æ±¾å¸‚",L"å•æ¢å¸‚",L"æ™‹ä¸­å¸‚",L"é˜³æ³‰å¸‚",L"æœ”å·žå¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"å¤§è¿žå¸‚",L"æ²ˆé˜³å¸‚",L"ä¸¹ä¸œå¸‚",L"è¾½é˜³å¸‚",L"è‘«èŠ¦å²›å¸‚",L"é”¦å·žå¸‚",L"æœé˜³å¸‚",L"è¥å£å¸‚",L"éžå±±å¸‚",L"æŠšé¡ºå¸‚",L"é˜œæ–°å¸‚",L"æœ¬æºªå¸‚",L"ç›˜é”¦å¸‚",L"é“å²­å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"å‰æž—å¸‚",L"é•¿æ˜¥å¸‚",L"ç™½å±±å¸‚",L"ç™½åŸŽå¸‚",L"å»¶è¾¹å·ž",L"æ¾åŽŸå¸‚",L"è¾½æºå¸‚",L"é€šåŒ–å¸‚",L"å››å¹³å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"é½é½å“ˆå°”å¸‚",L"å“ˆå°”æ»¨å¸‚",L"å¤§åº†å¸‚",L"ä½³æœ¨æ–¯å¸‚",L"åŒé¸­å±±å¸‚",L"ç‰¡ä¸¹æ±Ÿå¸‚",L"é¸¡è¥¿å¸‚",L"é»‘æ²³å¸‚",L"ç»¥åŒ–å¸‚",L"é¹¤å²—å¸‚",L"ä¼Šæ˜¥å¸‚",L"å¤§å…´å®‰å²­åœ°åŒº",L"ä¸ƒå°æ²³å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"è‹å·žå¸‚",L"å¾å·žå¸‚",L"ç›åŸŽå¸‚",L"æ— é”¡å¸‚",L"å—äº¬å¸‚",L"å—é€šå¸‚",L"è¿žäº‘æ¸¯å¸‚",L"å¸¸å·žå¸‚",L"æ‰¬å·žå¸‚",L"é•‡æ±Ÿå¸‚",L"æ·®å®‰å¸‚",L"æ³°å·žå¸‚",L"å®¿è¿å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"æ¸©å·žå¸‚",L"å®æ³¢å¸‚",L"æ­å·žå¸‚",L"å°å·žå¸‚",L"å˜‰å…´å¸‚",L"é‡‘åŽå¸‚",L"æ¹–å·žå¸‚",L"ç»å…´å¸‚",L"èˆŸå±±å¸‚",L"ä¸½æ°´å¸‚",L"è¡¢å·žå¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"èŠœæ¹–å¸‚",L"åˆè‚¥å¸‚",L"å…­å®‰å¸‚",L"å®¿å·žå¸‚",L"é˜œé˜³å¸‚",L"å®‰åº†å¸‚",L"é©¬éžå±±å¸‚",L"èšŒåŸ å¸‚",L"æ·®åŒ—å¸‚",L"æ·®å—å¸‚",L"å®£åŸŽå¸‚",L"é»„å±±å¸‚",L"é“œé™µå¸‚",L"äº³å·žå¸‚",L"æ± å·žå¸‚",L"å·¢æ¹–å¸‚",L"æ»å·žå¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"æ¼³å·žå¸‚",L"æ³‰å·žå¸‚",L"åŽ¦é—¨å¸‚",L"ç¦å·žå¸‚",L"èŽ†ç”°å¸‚",L"å®å¾·å¸‚",L"ä¸‰æ˜Žå¸‚",L"å—å¹³å¸‚",L"é¾™å²©å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"å—æ˜Œå¸‚",L"èµ£å·žå¸‚",L"ä¸Šé¥¶å¸‚",L"å‰å®‰å¸‚",L"ä¹æ±Ÿå¸‚",L"æ–°ä½™å¸‚",L"æŠšå·žå¸‚",L"å®œæ˜¥å¸‚",L"æ™¯å¾·é•‡å¸‚",L"èä¹¡å¸‚",L"é¹°æ½­å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"æµŽå—å¸‚",L"é’å²›å¸‚",L"ä¸´æ²‚å¸‚",L"æµŽå®å¸‚",L"èæ³½å¸‚",L"çƒŸå°å¸‚",L"æ³°å®‰å¸‚",L"æ·„åšå¸‚",L"æ½åŠå¸‚",L"æ—¥ç…§å¸‚",L"å¨æµ·å¸‚",L"æ»¨å·žå¸‚",L"ä¸œè¥å¸‚",L"èŠåŸŽå¸‚",L"å¾·å·žå¸‚",L"èŽ±èŠœå¸‚",L"æž£åº„å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"éƒ‘å·žå¸‚",L"å—é˜³å¸‚",L"æ–°ä¹¡å¸‚",L"å®‰é˜³å¸‚",L"æ´›é˜³å¸‚",L"ä¿¡é˜³å¸‚",L"å¹³é¡¶å±±å¸‚",L"å‘¨å£å¸‚",L"å•†ä¸˜å¸‚",L"å¼€å°å¸‚",L"ç„¦ä½œå¸‚",L"é©»é©¬åº—å¸‚",L"æ¿®é˜³å¸‚",L"ä¸‰é—¨å³¡å¸‚",L"æ¼¯æ²³å¸‚",L"è®¸æ˜Œå¸‚",L"é¹¤å£å¸‚",L"æµŽæºå¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"æ­¦æ±‰å¸‚",L"å®œæ˜Œå¸‚",L"è¥„æ¨Šå¸‚",L"è†å·žå¸‚",L"æ©æ–½å·ž",L"å­æ„Ÿå¸‚",L"é»„å†ˆå¸‚",L"åå °å¸‚",L"å’¸å®å¸‚",L"é»„çŸ³å¸‚",L"ä»™æ¡ƒå¸‚",L"éšå·žå¸‚",L"å¤©é—¨å¸‚",L"è†é—¨å¸‚",L"æ½œæ±Ÿå¸‚",L"é„‚å·žå¸‚",L"ç¥žå†œæž¶æž—åŒº",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"é•¿æ²™å¸‚",L"é‚µé˜³å¸‚",L"å¸¸å¾·å¸‚",L"è¡¡é˜³å¸‚",L"æ ªæ´²å¸‚",L"æ¹˜æ½­å¸‚",L"æ°¸å·žå¸‚",L"å²³é˜³å¸‚",L"æ€€åŒ–å¸‚",L"éƒ´å·žå¸‚",L"å¨„åº•å¸‚",L"ç›Šé˜³å¸‚",L"å¼ å®¶ç•Œå¸‚",L"æ¹˜è¥¿å·ž",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",""
+L"ä¸œèŽžå¸‚",L"å¹¿å·žå¸‚",L"ä¸­å±±å¸‚",L"æ·±åœ³å¸‚",L"æƒ å·žå¸‚",L"æ±Ÿé—¨å¸‚",L"ç æµ·å¸‚",L"æ±•å¤´å¸‚",L"ä½›å±±å¸‚",L"æ¹›æ±Ÿå¸‚",L"æ²³æºå¸‚",L"è‚‡åº†å¸‚",L"æ½®å·žå¸‚",L"æ¸…è¿œå¸‚",L"éŸ¶å…³å¸‚",L"æ­é˜³å¸‚",L"é˜³æ±Ÿå¸‚",L"äº‘æµ®å¸‚",L"èŒ‚åå¸‚",L"æ¢…å·žå¸‚",L"æ±•å°¾å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"ä¸‰äºšå¸‚",L"æµ·å£å¸‚",L"ç¼æµ·å¸‚",L"æ–‡æ˜Œå¸‚",L"ä¸œæ–¹å¸‚",L"æ˜Œæ±ŸåŽ¿",L"é™µæ°´åŽ¿",L"ä¹ä¸œåŽ¿",L"äº”æŒ‡å±±å¸‚",L"ä¿äº­åŽ¿",L"æ¾„è¿ˆåŽ¿",L"ä¸‡å®å¸‚",L"å„‹å·žå¸‚",L"ä¸´é«˜åŽ¿",L"ç™½æ²™åŽ¿",L"å®šå®‰åŽ¿",L"ç¼ä¸­åŽ¿",L"å±¯æ˜ŒåŽ¿",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"æˆéƒ½å¸‚",L"ç»µé˜³å¸‚",L"å¹¿å…ƒå¸‚",L"è¾¾å·žå¸‚",L"å—å……å¸‚",L"å¾·é˜³å¸‚",L"å¹¿å®‰å¸‚",L"é˜¿åå·ž",L"å·´ä¸­å¸‚",L"é‚å®å¸‚",L"å†…æ±Ÿå¸‚",L"å‡‰å±±å·ž",L"æ”€æžèŠ±å¸‚",L"ä¹å±±å¸‚",L"è‡ªè´¡å¸‚",L"æ³¸å·žå¸‚",L"é›…å®‰å¸‚",L"å®œå®¾å¸‚",L"èµ„é˜³å¸‚",L"çœ‰å±±å¸‚",L"ç”˜å­œå·ž",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"è´µé˜³å¸‚",L"é»”ä¸œå—å·ž",L"é»”å—å·ž",L"éµä¹‰å¸‚",L"é»”è¥¿å—å·ž",L"æ¯•èŠ‚åœ°åŒº",L"é“œä»åœ°åŒº",L"å®‰é¡ºå¸‚",L"å…­ç›˜æ°´å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"æ˜†æ˜Žå¸‚",L"çº¢æ²³å·ž",L"å¤§ç†å·ž",L"æ–‡å±±å·ž",L"å¾·å®å·ž",L"æ›²é–å¸‚",L"æ˜­é€šå¸‚",L"æ¥šé›„å·ž",L"ä¿å±±å¸‚",L"çŽ‰æºªå¸‚",L"ä¸½æ±Ÿåœ°åŒº",L"ä¸´æ²§åœ°åŒº",L"æ€èŒ…åœ°åŒº",L"è¥¿åŒç‰ˆçº³å·ž",L"æ€’æ±Ÿå·ž",L"è¿ªåº†å·ž",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"è¥¿å®‰å¸‚",L"å’¸é˜³å¸‚",L"å®é¸¡å¸‚",L"æ±‰ä¸­å¸‚",L"æ¸­å—å¸‚",L"å®‰åº·å¸‚",L"æ¦†æž—å¸‚",L"å•†æ´›å¸‚",L"å»¶å®‰å¸‚",L"é“œå·å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"å…°å·žå¸‚",L"å¤©æ°´å¸‚",L"åº†é˜³å¸‚",L"æ­¦å¨å¸‚",L"é…’æ³‰å¸‚",L"å¼ æŽ–å¸‚",L"é™‡å—åœ°åŒº",L"ç™½é“¶å¸‚",L"å®šè¥¿åœ°åŒº",L"å¹³å‡‰å¸‚",L"å˜‰å³ªå…³å¸‚",L"ä¸´å¤å›žæ—è‡ªæ²»å·ž",L"é‡‘æ˜Œå¸‚",L"ç”˜å—å·ž",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"è¥¿å®å¸‚",L"æµ·è¥¿å·ž",L"æµ·ä¸œåœ°åŒº",L"æµ·åŒ—å·ž",L"æžœæ´›å·ž",L"çŽ‰æ ‘å·ž",L"é»„å—è—æ—è‡ªæ²»å·ž",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"å°åŒ—å¸‚",L"é«˜é›„å¸‚",L"å°ä¸­å¸‚",L"æ–°ç«¹å¸‚",L"åŸºéš†å¸‚",L"å°å—å¸‚",L"å˜‰ä¹‰å¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L""
 };
-string provs[23] = { "ºÓ±±Ê¡", "É½Î÷Ê¡", "ÁÉÄþÊ¡", "¼ªÁÖÊ¡", "ºÚÁú½­Ê¡", \
-	"½­ËÕÊ¡", "Õã½­Ê¡", "°²»ÕÊ¡", "¸£½¨Ê¡", "½­Î÷Ê¡", "É½¶«Ê¡", "ºÓÄÏÊ¡",\
-	"ºþ±±Ê¡", "ºþÄÏÊ¡", "¹ã¶«Ê¡", "º£ÄÏÊ¡", "ËÄ´¨Ê¡", "¹óÖÝÊ¡", "ÔÆÄÏÊ¡",\
-	"ÉÂÎ÷Ê¡", "¸ÊËàÊ¡", "Çàº£Ê¡", "Ì¨ÍåÊ¡" };									//È«¹ú¸÷Ê¡
-string cities[23][30] =
-{ "Ê¯¼Ò×¯ÊÐ","ÌÆÉ½ÊÐ","±£¶¨ÊÐ","ºªµ¦ÊÐ","ÐÏÌ¨ÊÐ","ºÓ±±Çø","²×ÖÝÊÐ","ÇØ»ÊµºÊÐ","ÕÅ¼Ò¿ÚÊÐ","ºâË®ÊÐ","ÀÈ·»ÊÐ","³ÐµÂÊÐ","","","","","","","","","","","","","","","","","","",\
-   "Ì«Ô­ÊÐ","´óÍ¬ÊÐ","ÔË³ÇÊÐ","³¤ÖÎÊÐ","½ú³ÇÊÐ","ÐÃÖÝÊÐ","ÁÙ·ÚÊÐ","ÂÀÁºÊÐ","½úÖÐÊÐ","ÑôÈªÊÐ","Ë·ÖÝÊÐ","","","","","","","","","","","","","","","","","","","",\
-   "´óÁ¬ÊÐ","ÉòÑôÊÐ","µ¤¶«ÊÐ","ÁÉÑôÊÐ","ºùÂ«µºÊÐ","½õÖÝÊÐ","³¯ÑôÊÐ","Óª¿ÚÊÐ","°°É½ÊÐ","¸§Ë³ÊÐ","¸·ÐÂÊÐ","±¾ÏªÊÐ"," ÅÌ½õÊÐ","ÌúÁëÊÐ","","","","","","","","","","","","","","","","",\
-	"¼ªÁÖÊÐ","³¤´ºÊÐ","°×É½ÊÐ","°×³ÇÊÐ","ÑÓ±ßÖÝ","ËÉÔ­ÊÐ","ÁÉÔ´ÊÐ","Í¨»¯ÊÐ","ËÄÆ½ÊÐ","","","","","","","","","","","","","","","","","","","","","",\
-	"ÆëÆë¹þ¶ûÊÐ","¹þ¶û±õÊÐ","´óÇìÊÐ","¼ÑÄ¾Ë¹ÊÐ","Ë«Ñ¼É½ÊÐ","Äµµ¤½­ÊÐ","¼¦Î÷ÊÐ","ºÚºÓÊÐ","Ëç»¯ÊÐ","º×¸ÚÊÐ","ÒÁ´ºÊÐ","´óÐË°²ÁëµØÇø","ÆßÌ¨ºÓÊÐ","","","","","","","","","","","","","","","","","",\
-	"ËÕÖÝÊÐ","ÐìÖÝÊÐ","ÑÎ³ÇÊÐ","ÎÞÎýÊÐ","ÄÏ¾©ÊÐ","ÄÏÍ¨ÊÐ","Á¬ÔÆ¸ÛÊÐ","³£ÖÝÊÐ","ÑïÖÝÊÐ","Õò½­ÊÐ","»´°²ÊÐ","Ì©ÖÝÊÐ"," ËÞÇ¨ÊÐ","","","","","","","","","","","","","","","","","",\
-	"ÎÂÖÝÊÐ","Äþ²¨ÊÐ","º¼ÖÝÊÐ","Ì¨ÖÝÊÐ","¼ÎÐËÊÐ","½ð»ªÊÐ","ºþÖÝÊÐ","ÉÜÐËÊÐ","ÖÛÉ½ÊÐ","ÀöË®ÊÐ","áéÖÝÊÐ","","","","","","","","","","","","","","","","","","","",\
-	"ÎßºþÊÐ","ºÏ·ÊÊÐ","Áù°²ÊÐ","ËÞÖÝÊÐ","¸·ÑôÊÐ","°²ÇìÊÐ","Âí°°É½ÊÐ","°ö²ºÊÐ","»´±±ÊÐ","»´ÄÏÊÐ","Ðû³ÇÊÐ","»ÆÉ½ÊÐ"," Í­ÁêÊÐ","ÙñÖÝÊÐ","³ØÖÝÊÐ","³²ºþÊÐ","³üÖÝÊÐ","","","","","","","","","","","","","",\
-	"ÕÄÖÝÊÐ","ÈªÖÝÊÐ","ÏÃÃÅÊÐ","¸£ÖÝÊÐ","ÆÎÌïÊÐ","ÄþµÂÊÐ","ÈýÃ÷ÊÐ","ÄÏÆ½ÊÐ","ÁúÑÒÊÐ","","","","","","","","","","","","","","","","","","","","","",\
-	"ÄÏ²ýÊÐ","¸ÓÖÝÊÐ","ÉÏÈÄÊÐ","¼ª°²ÊÐ","¾Å½­ÊÐ","ÐÂÓàÊÐ","¸§ÖÝÊÐ","ÒË´ºÊÐ","¾°µÂÕòÊÐ","Æ¼ÏçÊÐ","Ó¥Ì¶ÊÐ","","","","","","","","","","","","","","","","","","","",\
-	"¼ÃÄÏÊÐ","ÇàµºÊÐ","ÁÙÒÊÊÐ","¼ÃÄþÊÐ","ºÊÔóÊÐ","ÑÌÌ¨ÊÐ","Ì©°²ÊÐ","×Í²©ÊÐ","Î«·»ÊÐ","ÈÕÕÕÊÐ","Íþº£ÊÐ","±õÖÝÊÐ","¶«ÓªÊÐ","ÁÄ³ÇÊÐ","µÂÖÝÊÐ","À³ÎßÊÐ","Ôæ×¯ÊÐ","","","","","","","","","","","","","",\
-	"Ö£ÖÝÊÐ","ÄÏÑôÊÐ","ÐÂÏçÊÐ","°²ÑôÊÐ","ÂåÑôÊÐ","ÐÅÑôÊÐ","Æ½¶¥É½ÊÐ","ÖÜ¿ÚÊÐ","ÉÌÇðÊÐ","¿ª·âÊÐ","½¹×÷ÊÐ","×¤ÂíµêÊÐ","å§ÑôÊÐ","ÈýÃÅÏ¿ÊÐ","äðºÓÊÐ","Ðí²ýÊÐ","º×±ÚÊÐ","¼ÃÔ´ÊÐ","","","","","","","","","","","","",\
-	"ÎäººÊÐ","ÒË²ýÊÐ","Ïå·®ÊÐ","¾£ÖÝÊÐ","¶÷Ê©ÖÝ","Ð¢¸ÐÊÐ","»Æ¸ÔÊÐ","Ê®ÑßÊÐ","ÏÌÄþÊÐ","»ÆÊ¯ÊÐ","ÏÉÌÒÊÐ","ËæÖÝÊÐ","ÌìÃÅÊÐ","¾£ÃÅÊÐ","Ç±½­ÊÐ","¶õÖÝÊÐ","ÉñÅ©¼ÜÁÖÇø","","","","","","","","","","","","","",\
-	"³¤É³ÊÐ","ÉÛÑôÊÐ","³£µÂÊÐ","ºâÑôÊÐ","ÖêÖÞÊÐ","ÏæÌ¶ÊÐ","ÓÀÖÝÊÐ","ÔÀÑôÊÐ","»³»¯ÊÐ","³»ÖÝÊÐ","Â¦µ×ÊÐ","ÒæÑôÊÐ","ÕÅ¼Ò½çÊÐ","ÏæÎ÷ÖÝ","","","","","","","","","","","","","","","","",""\
-	"¶«Ý¸ÊÐ","¹ãÖÝÊÐ","ÖÐÉ½ÊÐ","ÉîÛÚÊÐ","»ÝÖÝÊÐ","½­ÃÅÊÐ","Öéº£ÊÐ","ÉÇÍ·ÊÐ","·ðÉ½ÊÐ","Õ¿½­ÊÐ","ºÓÔ´ÊÐ","ÕØÇìÊÐ","³±ÖÝÊÐ","ÇåÔ¶ÊÐ","ÉØ¹ØÊÐ","½ÒÑôÊÐ","Ñô½­ÊÐ","ÔÆ¸¡ÊÐ","Ã¯ÃûÊÐ","Ã·ÖÝÊÐ","ÉÇÎ²ÊÐ","","","","","","","","","",\
-	"ÈýÑÇÊÐ","º£¿ÚÊÐ","Çíº£ÊÐ","ÎÄ²ýÊÐ","¶«·½ÊÐ","²ý½­ÏØ","ÁêË®ÏØ","ÀÖ¶«ÏØ","ÎåÖ¸É½ÊÐ","±£Í¤ÏØ","³ÎÂõÏØ","ÍòÄþÊÐ","ÙÙÖÝÊÐ","ÁÙ¸ßÏØ","°×É³ÏØ","¶¨°²ÏØ","ÇíÖÐÏØ","ÍÍ²ýÏØ","","","","","","","","","","","","",\
-	"³É¶¼ÊÐ","ÃàÑôÊÐ","¹ãÔªÊÐ","´ïÖÝÊÐ","ÄÏ³äÊÐ","µÂÑôÊÐ","¹ã°²ÊÐ","°¢°ÓÖÝ","°ÍÖÐÊÐ","ËìÄþÊÐ","ÄÚ½­ÊÐ","Á¹É½ÖÝ","ÅÊÖ¦»¨ÊÐ","ÀÖÉ½ÊÐ","×Ô¹±ÊÐ","ãòÖÝÊÐ","ÑÅ°²ÊÐ","ÒË±öÊÐ","×ÊÑôÊÐ","Ã¼É½ÊÐ","¸Ê×ÎÖÝ","","","","","","","","","",\
-	"¹óÑôÊÐ","Ç­¶«ÄÏÖÝ","Ç­ÄÏÖÝ","×ñÒåÊÐ","Ç­Î÷ÄÏÖÝ","±Ï½ÚµØÇø","Í­ÈÊµØÇø","°²Ë³ÊÐ","ÁùÅÌË®ÊÐ","","","","","","","","","","","","","","","","","","","","","",\
-	"À¥Ã÷ÊÐ","ºìºÓÖÝ","´óÀíÖÝ","ÎÄÉ½ÖÝ","µÂºêÖÝ","Çú¾¸ÊÐ","ÕÑÍ¨ÊÐ","³þÐÛÖÝ","±£É½ÊÐ","ÓñÏªÊÐ","Àö½­µØÇø","ÁÙ²×µØÇø","Ë¼Ã©µØÇø","Î÷Ë«°æÄÉÖÝ","Å­½­ÖÝ","µÏÇìÖÝ","","","","","","","","","","","","","","",\
-	"Î÷°²ÊÐ","ÏÌÑôÊÐ","±¦¼¦ÊÐ","ººÖÐÊÐ","Î¼ÄÏÊÐ","°²¿µÊÐ","ÓÜÁÖÊÐ","ÉÌÂåÊÐ","ÑÓ°²ÊÐ","Í­´¨ÊÐ","","","","","","","","","","","","","","","","","","","","",\
-	"À¼ÖÝÊÐ","ÌìË®ÊÐ","ÇìÑôÊÐ","ÎäÍþÊÐ","¾ÆÈªÊÐ","ÕÅÒ´ÊÐ","Â¤ÄÏµØÇø","°×ÒøÊÐ","¶¨Î÷µØÇø","Æ½Á¹ÊÐ","¼ÎÓø¹ØÊÐ","ÁÙÏÄ»Ø×å×ÔÖÎÖÝ","½ð²ýÊÐ","¸ÊÄÏÖÝ","","","","","","","","","","","","","","","","",\
-	"Î÷ÄþÊÐ","º£Î÷ÖÝ","º£¶«µØÇø","º£±±ÖÝ","¹ûÂåÖÝ","ÓñÊ÷ÖÝ","»ÆÄÏ²Ø×å×ÔÖÎÖÝ","","","","","","","","","","","","","","","","","","","","","","","",\
-	"Ì¨±±ÊÐ","¸ßÐÛÊÐ","Ì¨ÖÐÊÐ","ÐÂÖñÊÐ","»ùÂ¡ÊÐ","Ì¨ÄÏÊÐ","¼ÎÒåÊÐ","","","","","","","","","","","","","","","","","","","","","","",""\
-};
-string zzq[5] = { "¹ãÎ÷×³×å×ÔÖÎÇø","ÄÚÃÉ¹Å×ÔÖÎÇø","ÐÂ½®Î¬Îá¶û×ÔÖÎÇø","ÄþÏÄ»Ø×å×ÔÖÎÇø","Î÷²Ø×ÔÖÎÇø" };//×ÔÖÎÇø
-string zzq_cities[5][18] = {
-	"¹ó¸ÛÊÐ","ÓñÁÖÊÐ","±±º£ÊÐ","ÄÏÄþÊÐ","ÁøÖÝÊÐ","¹ðÁÖÊÐ","ÎàÖÝÊÐ","ÇÕÖÝÊÐ","À´±öÊÐ","ºÓ³ØÊÐ","°ÙÉ«ÊÐ","ºØÖÝÊÐ","³ç×óÊÐ","·À³Ç¸ÛÊÐ","","","","",\
-	"³à·åÊÐ", "°üÍ·ÊÐ", "Í¨ÁÉÊÐ", "ºôºÍºÆÌØÊÐ", "ÎÚº£ÊÐ", "¶õ¶û¶àË¹ÊÐ", "ºôÂ×±´¶ûÊÐ", "ÐË°²ÃË", "°ÍÑåÄ×¶ûÃË", "ÎÚÀ¼²ì²¼ÃË", "ÎýÁÖ¹ùÀÕÃË", "°¢À­ÉÆÃË", "", "", "", "", "", "",\
-	"ÎÚÂ³Ä¾ÆëÊÐ", "ÒÁÀçÖÝ", "²ý¼ªÖÝ", "Ê¯ºÓ×ÓÊÐ", "¹þÃÜµØÇø", "°¢¿ËËÕµØÇø", "°ÍÒô¹ùÀãÖÝ", "¿¦Ê²µØÇø", "Ëþ³ÇµØÇø", "¿ËÀ­ÂêÒÀÊÐ", "ºÍÌïµØÇø", "°¢ÀÕÌ©ÖÝ", "ÍÂÂ³·¬µØÇø", "°¢À­¶ûÊÐ", "²©¶ûËþÀ­ÖÝ", "Îå¼ÒÇþÊÐ", "¿Ë×ÎÀÕËÕÖÝ", "Í¼Ä¾Êæ¿ËÊÐ",\
-	"Òø´¨ÊÐ", "ÎâÖÒÊÐ", "ÖÐÎÀÊÐ", "Ê¯×ìÉ½ÊÐ", "¹ÌÔ­ÊÐ", "", "", "", "", "", "", "", "", "", "", "", "", "",\
-	"À­ÈøÊÐ", "É½ÄÏµØÇø", "ÁÖÖ¥µØÇø", "ÈÕ¿¦ÔòµØÇø", "°¢ÀïµØÇø", "²ý¶¼µØÇø", "ÄÇÇúµØÇø", "", "", "", "", "", "", "", "", "", ""
-};//×ÔÖÎÇø³ÇÊÐ
+wstring zzq[5] = { L"å¹¿è¥¿å£®æ—è‡ªæ²»åŒº",L"å†…è’™å¤è‡ªæ²»åŒº",L"æ–°ç–†ç»´å¾å°”è‡ªæ²»åŒº",L"å®å¤å›žæ—è‡ªæ²»åŒº",L"è¥¿è—è‡ªæ²»åŒº" };//è‡ªæ²»åŒº
+wstring zzq_cities[5][18] = {
+	L"è´µæ¸¯å¸‚",L"çŽ‰æž—å¸‚",L"åŒ—æµ·å¸‚",L"å—å®å¸‚",L"æŸ³å·žå¸‚",L"æ¡‚æž—å¸‚",L"æ¢§å·žå¸‚",L"é’¦å·žå¸‚",L"æ¥å®¾å¸‚",L"æ²³æ± å¸‚",L"ç™¾è‰²å¸‚",L"è´ºå·žå¸‚",L"å´‡å·¦å¸‚",L"é˜²åŸŽæ¸¯å¸‚",L"",L"",L"",L"",
+L"èµ¤å³°å¸‚",L"åŒ…å¤´å¸‚",L"é€šè¾½å¸‚",L"å‘¼å’Œæµ©ç‰¹å¸‚",L"ä¹Œæµ·å¸‚",L"é„‚å°”å¤šæ–¯å¸‚",L"å‘¼ä¼¦è´å°”å¸‚",L"å…´å®‰ç›Ÿ",L"å·´å½¦æ·–å°”ç›Ÿ",L"ä¹Œå…°å¯Ÿå¸ƒç›Ÿ",L"é”¡æž—éƒ­å‹’ç›Ÿ",L"é˜¿æ‹‰å–„ç›Ÿ",L"",L"",L"",L"",L"",L"",
+L"ä¹Œé²æœ¨é½å¸‚",L"ä¼ŠçŠå·ž",L"æ˜Œå‰å·ž",L"çŸ³æ²³å­å¸‚",L"å“ˆå¯†åœ°åŒº",L"é˜¿å…‹è‹åœ°åŒº",L"å·´éŸ³éƒ­æ¥žå·ž",L"å–€ä»€åœ°åŒº",L"å¡”åŸŽåœ°åŒº",L"å…‹æ‹‰çŽ›ä¾å¸‚",L"å’Œç”°åœ°åŒº",L"é˜¿å‹’æ³°å·ž",L"åé²ç•ªåœ°åŒº",L"é˜¿æ‹‰å°”å¸‚",L"åšå°”å¡”æ‹‰å·ž",L"äº”å®¶æ¸ å¸‚",L"å…‹å­œå‹’è‹å·ž",L"å›¾æœ¨èˆ’å…‹å¸‚",
+L"é“¶å·å¸‚",L"å´å¿ å¸‚",L"ä¸­å«å¸‚",L"çŸ³å˜´å±±å¸‚",L"å›ºåŽŸå¸‚",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"æ‹‰è¨å¸‚",L"å±±å—åœ°åŒº",L"æž—èŠåœ°åŒº",L"æ—¥å–€åˆ™åœ°åŒº",L"é˜¿é‡Œåœ°åŒº",L"æ˜Œéƒ½åœ°åŒº",L"é‚£æ›²åœ°åŒº",L"",L"",L"",L"",L"",L"",L"",L"",L"",L""
+};//è‡ªæ²»åŒºåŸŽå¸‚
 
-string type_seperate()			//µØÖ·ÀàÐÍ½âÎö
+wstring type_seperate()			//åœ°å€ç±»åž‹è§£æž
 {
-	regex r("^\\d!");
+	/*regex r("^\\d!");
 	smatch t;
 	regex_search(addr, t, r);
 	string type = t.str();
-	addr = regex_replace(addr, r, "");
+	addr = regex_replace(addr, r, "");*/
 	/*string type;
 	type = addr.substr(0, 1);
 	addr.replace(0, 2, "");
 	*/
+	wstring type = addr.substr(0, addr.find(L"!") + 1);
+	addr = addr.erase(0, addr.find(L"!")+1);
 	return type;
 }
 
-string name_seperate() //½âÎöÐÕÃû
+wstring name_seperate() //è§£æžå§“å
 {
-	int flag = addr.find(',');
-	string name = addr.substr(0, flag);
-	addr.replace(0, flag, "");	//½âÎö³öÐÕÃûºó½«ÐÕÃû²ÁÈ¥
-	addr.erase(addr.find("."), 1); //²ÁÈ¥ '.'
-	addr.erase(addr.find(","), 1); //²ÁÈ¥ ','
+	int flag = addr.find(L',');
+	wstring name = addr.substr(0, flag);
+	addr.erase(0, flag);	//è§£æžå‡ºå§“ååŽå°†å§“åæ“¦åŽ»
+	addr.erase(addr.find(L"."), 1); //æ“¦åŽ» '.'
+	addr.erase(addr.find(L","), 1); //æ“¦åŽ» ','
 	return name;
 }
 
-string Tel_num_analysis()//ÌáÈ¡11Î»µç»°ºÅÂë
+wstring Tel_num_analysis()//æå–11ä½ç”µè¯å·ç 
 {
 	smatch t;
 	regex r("\\d{11}");
-	regex_search(addr, t, r);
-	string Tel_number = t.str();
-	addr = regex_replace(addr, r, "");
+	string s = UnicodeToUTF8(addr);
+	regex_search(s, t, r);
+	wstring Tel_number = UTF8ToUnicode(t.str());
+	s = regex_replace(s, r, "");
+	addr = UTF8ToUnicode(s);
 
 	return Tel_number;
 };
 
-class Five_addr_analysis		//ÎåÎ»µØÖ·½âÎö
+class Five_addr_analysis		//äº”ä½åœ°å€è§£æž
 {
 public:
-	string name, tel_number, pro, Cities, country, town, detail_addr;
-	int prov_tag;	//Ê¡·Ý¶ÔÓ¦ÏÂ±ê
-	Five_addr_analysis(string Name, string Tel_num)
+	wstring name, tel_number, pro, Cities, country, town, detail_addr;
+	int prov_tag;	//çœä»½å¯¹åº”ä¸‹æ ‡
+	Five_addr_analysis(wstring Name, wstring Tel_num)
 	{
 		prov_tag = 0;
 		name = Name;
 		tel_number = Tel_num;
-		pro = Cities = country = town = detail_addr = "";
+		pro = Cities = country = town = detail_addr = L"";
 	}
-	void provs_seperate()//½âÎöÊ¡
+	void provs_seperate()//è§£æžçœ
 	{
 		int flag;
 		for (int i = 0; i < 23; i++)
 		{
-			/*µØÖ·ÖÐ´ø"Ê¡"*/
-			string temp = provs[i].substr(0, provs[i].size() - 2); //ÌáÈ¡Ê¡·ÝÃû³Æ£¬ÀýÈç£º¸£½¨
+			/*åœ°å€ä¸­å¸¦"çœ"*/
+			wstring temp = provs[i].substr(0, provs[i].size() - 1); //æå–çœä»½åç§°ï¼Œä¾‹å¦‚ï¼šç¦å»º
 			if ((flag = addr.find(provs[i])) != -1)
 			{
 				pro = provs[i];
 				prov_tag = i;
-				addr.erase(flag, provs[i].size()); //²ÁÈ¥¡°Ê¡¡±
+				addr.erase(flag, provs[i].size()); //æ“¦åŽ»â€œçœâ€
 				return;
 			}
-			/*µØÖ·ÖÐ²»´ø"Ê¡"µÄÊ¡*/
+			/*åœ°å€ä¸­ä¸å¸¦"çœ"çš„çœ*/
 			else if ((flag = addr.find(temp)) != -1)
 			{
 				pro = provs[i];
 				prov_tag = i;
-				addr.erase(flag, temp.size()); //²ÁÈ¥¡°Ê¡¡±
+				addr.erase(flag, temp.size()); //æ“¦åŽ»â€œçœâ€
 				return;
 			}
 
-			/*Ö±Ï½ÊÐ¡¢×ÔÖÎÇøÇ°ËÄ¸ö*/
+			/*ç›´è¾–å¸‚ã€è‡ªæ²»åŒºå‰å››ä¸ª*/
 			if (i < 4)
 			{
-				/*Ö±Ï½ÊÐ*/
+				/*ç›´è¾–å¸‚*/
 				if ((flag = addr.find(direct_city[i])) != -1)
 				{
 					pro = direct_city[i];
 					addr.erase(flag, direct_city[i].size());
-					prov_tag = i + 23;//Çø·ÖÖ±Ï½ÊÐ
+					prov_tag = i + 23;//åŒºåˆ†ç›´è¾–å¸‚
 					return;
 				}
-				temp = direct_city[i].substr(0, direct_city[i].size() - 2);//ÌáÈ¡Ö±Ï½ÊÐÃû³Æ,ÀýÈç£º±±¾©
+				temp = direct_city[i].substr(0, direct_city[i].size() - 1);//æå–ç›´è¾–å¸‚åç§°,ä¾‹å¦‚ï¼šåŒ—äº¬
 				if ((flag = addr.find(temp)) != -1)
 				{
 					pro = direct_city[i];
 					addr.erase(flag, temp.size());
-					prov_tag = i + 23;//Çø·ÖÖ±Ï½ÊÐ
+					prov_tag = i + 23;//åŒºåˆ†ç›´è¾–å¸‚
 					return;
 				}
 
-				/*×ÔÖÎÇø*/
+				/*è‡ªæ²»åŒº*/
 				if ((flag = addr.find(zzq[i])) != -1)
 				{
 					pro = zzq[i];
 					addr.erase(flag, zzq[i].size());
-					prov_tag = i + 27;//Çø·Ö×ÔÖÎÇø
+					prov_tag = i + 27;//åŒºåˆ†è‡ªæ²»åŒº
 					return;
 				}
-				temp = zzq[i].substr(0, zzq[i].size() - 6);//ÌáÈ¡×ÔÖÎÇøÃû×ÖÈçÄÚÃÉ¹Å
+				temp = zzq[i].substr(0, zzq[i].size() - 3);//æå–è‡ªæ²»åŒºåå­—å¦‚å†…è’™å¤
 				if ((flag = addr.find(temp)) != -1)
 				{
 					pro = zzq[i];
 					addr.erase(flag, temp.size());
-					prov_tag = i + 27;//Çø·ÖÖ±Ï½ÊÐ
+					prov_tag = i + 27;//åŒºåˆ†ç›´è¾–å¸‚
 					return;
 				}
 			}
 
-			/*×ÔÖÎÇø*/
+			/*è‡ªæ²»åŒº*/
 			if (i == 4)
 			{
 				if ((flag = addr.find(zzq[i])) != -1)
 				{
 					pro = zzq[i];
 					addr.erase(flag, zzq[i].size());
-					prov_tag = i + 27;//Çø·Ö×ÔÖÎÇø
+					prov_tag = i + 27;//åŒºåˆ†è‡ªæ²»åŒº
 					return;
 				}
-				temp = zzq[i].substr(0, zzq[i].size() - 6);//ÌáÈ¡×ÔÖÎÇøÃû×ÖÎ÷²Ø
+				temp = zzq[i].substr(0, zzq[i].size() - 3);//æå–è‡ªæ²»åŒºåå­—è¥¿è—
 				if ((flag = addr.find(temp)) != -1)
 				{
 					pro = zzq[i];
 					addr.erase(flag, temp.size());
-					prov_tag = i + 27;//Çø·ÖÖ±Ï½ÊÐ
+					prov_tag = i + 27;//åŒºåˆ†ç›´è¾–å¸‚
 					return;
 				}
 			}
 		}
 	}
-	void cities_seperate()//½âÎöÊÐ
+	void cities_seperate()//è§£æžå¸‚
 	{
 		int flag;
-		if (prov_tag < 23) //Ò»°ã³ÇÊÐ
+		if (prov_tag < 23) //ä¸€èˆ¬åŸŽå¸‚
 		{
 			for (int i = 0; i < 30; i++)
 			{
 				if ((flag = addr.find(cities[prov_tag][i])) != -1)
 				{
 					Cities = cities[prov_tag][i];
-					addr.erase(flag, cities[prov_tag][i].size()); //²ÁÈ¥¡°ÊÐ¡±
+					addr.erase(flag, cities[prov_tag][i].size()); //æ“¦åŽ»â€œå¸‚â€
 					return;
 				}
-				/*µØÖ·ÖÐ²»´ø"ÊÐ"*/
+				/*åœ°å€ä¸­ä¸å¸¦"å¸‚"*/
 				else
 				{
-					string temp = cities[prov_tag][i].substr(0, cities[prov_tag][i].size() - 2);
+					wstring temp = cities[prov_tag][i].substr(0, cities[prov_tag][i].size() - 1);
 					if ((flag = addr.find(temp)) != -1)
 					{
 						Cities = cities[prov_tag][i];
-						addr.erase(flag, temp.size()); //²ÁÈ¥¡°ÊÐ¡±
+						addr.erase(flag, temp.size()); //æ“¦åŽ»â€œå¸‚â€
 						return;
 					}
 				}
 			}
 		}
-		else if (prov_tag < 27)//Ö±Ï½ÊÐÏÂµÄ³ÇÊÐ
+		else if (prov_tag < 27)//ç›´è¾–å¸‚ä¸‹çš„åŸŽå¸‚
 		{
 			prov_tag -= 23;
 			for (int j = 0; j < 40; j++)
@@ -219,7 +222,7 @@ public:
 					addr.erase(flag, Cities.size());
 					return;
 				}
-				string t = direct_cities[prov_tag][j].substr(0, direct_cities[prov_tag][j].size() - 2);
+				wstring t = direct_cities[prov_tag][j].substr(0, direct_cities[prov_tag][j].size() - 1);
 				if ((flag = addr.find(t)) != -1)
 				{
 					Cities = direct_cities[prov_tag][j];
@@ -228,7 +231,7 @@ public:
 				}
 			}
 		}
-		else//×ÔÖÎÇøÏÂµÄ³ÇÊÐ
+		else//è‡ªæ²»åŒºä¸‹çš„åŸŽå¸‚
 		{
 			prov_tag -= 27;
 			for (int j = 0; j < 18; j++)
@@ -239,7 +242,7 @@ public:
 					addr.erase(flag, Cities.size());
 					return;
 				}
-				string t = zzq_cities[prov_tag][j].substr(0, zzq_cities[prov_tag][j].size() - 2);
+				wstring t = zzq_cities[prov_tag][j].substr(0, zzq_cities[prov_tag][j].size() - 1);
 				if ((flag = addr.find(t)) != -1)
 				{
 					Cities = zzq_cities[prov_tag][j];
@@ -256,28 +259,34 @@ public:
 			}
 		}
 	}
-	void counties_seperate()//½âÎöÏØ/Çø/ÏØ¼¶ÊÐ
+	void counties_seperate()//è§£æžåŽ¿/åŒº/åŽ¿çº§å¸‚
 	{
-		regex r(".*?(Çø|ÏØ|ÊÐ)");
+		string s = UnicodeToUTF8(addr);
+		regex r(".*?(åŒº|åŽ¿|å¸‚)");
 		smatch Country;
-		regex_search(addr, Country, r);//½âÎöµ½ÏØ/Çø/ÏØ¼¶ÊÐ
-		country += Country.str();
-		addr = regex_replace(addr, r, "");
+		regex_search(s, Country, r);//è§£æžåˆ°åŽ¿/åŒº/åŽ¿çº§å¸‚
+		string country1;
+		country1 += Country.str();
+		country = UTF8ToUnicode(country1);
+		s = regex_replace(s, r, "");
+		addr = UTF8ToUnicode(s);
 	}
-	void towns_seperate()//½âÎö½ÖµÀ/Õò/Ïç
+	void towns_seperate()//è§£æžè¡—é“/é•‡/ä¹¡
 	{
-		regex r(".+((½ÖµÀ)|Õò|Ïç)");
+		string s = UnicodeToUTF8(addr);
+		regex r(".+((è¡—é“)|é•‡|ä¹¡)");
 		smatch Town;
-		regex_search(addr, Town, r);//½âÎöµ½½ÖµÀ/Ïç/Õò
-		town = Town.str();		//±£´æµ½townÖÐ
-		addr = regex_replace(addr, r, "");
+		regex_search(s, Town, r);//è§£æžåˆ°è¡—é“/ä¹¡/é•‡
+		town = UTF8ToUnicode(Town.str());		//ä¿å­˜åˆ°townä¸­
+		s = regex_replace(s, r, "");
+		addr = UTF8ToUnicode(s);
 		return;
 	}
-	void detail_seperate()//½âÎö ÏêÏ¸µØÖ·
+	void detail_seperate()//è§£æž è¯¦ç»†åœ°å€
 	{
 		detail_addr = addr;
 	}
-	void info_collect()//µØÖ·½âÎöº¯Êý
+	void info_collect()//åœ°å€è§£æžå‡½æ•°
 	{
 		provs_seperate();
 		cities_seperate();
@@ -285,10 +294,10 @@ public:
 		towns_seperate();
 		detail_seperate();
 	}
-	string print_info()	//Îå¼¶µØÖ·¸ñÊ½Êä³ö
+	wstring print_info()	//äº”çº§åœ°å€æ ¼å¼è¾“å‡º
 	{
-		string address = "{\"ÐÕÃû\":\"" + name + "\",\"ÊÖ»ú\":\"" + tel_number + "\",\"µØÖ·\":[" + "\"" + pro + "\",\"" + Cities + "\",\""
-			+ country + "\",\"" + town + "\",\"" + detail_addr + "\"]}";
+		wstring address = L"{\"å§“å\":\"" + name + L"\",\"æ‰‹æœº\":\"" + tel_number + L"\",\"åœ°å€\":[" + L"\"" + pro + L"\",\"" + Cities + L"\",\""
+			+ country + L"\",\"" + town + L"\",\"" + detail_addr + L"\"]}";
 		//cout << address << endl;
 		return address;
 	}
@@ -297,63 +306,65 @@ public:
 class Seven_addr_analysis :public Five_addr_analysis
 {
 public:
-	string road, gate_num;
-	Seven_addr_analysis(string name, string tel_number) :Five_addr_analysis(name, tel_number) { road = gate_num = ""; }
-	void road_seperate()//½âÎöÂ·
+	wstring road, gate_num;
+	Seven_addr_analysis(wstring name, wstring tel_number) :Five_addr_analysis(name, tel_number) { road = gate_num = L""; }
+	void road_seperate()//è§£æžè·¯
 	{
-		regex r(".+(Â·|½Ö|Ïï|(ºúÍ¬)|Àï)");
+		string s = UnicodeToUTF8(addr);
+		regex r(".+(è·¯|è¡—|å··|(èƒ¡åŒ)|é‡Œ)");
 		smatch Road;
-		regex_search(addr, Road, r);
-		road = Road.str();
-		addr = regex_replace(addr, r, "");
+		regex_search(s, Road, r);
+		road = UTF8ToUnicode(Road.str());
+		addr = UTF8ToUnicode(regex_replace(s, r, ""));
 		return;
 	}
-	void gate_number()//½âÎöÃÅÅÆºÅ
+	void gate_number()//è§£æžé—¨ç‰Œå·
 	{
-		regex r(".+(ºÅ)");
+		string s = UnicodeToUTF8(addr);
+		regex r(".+(å·)");
 		smatch gate;
-		regex_search(addr, gate, r);
-		gate_num = gate.str();
-		addr = regex_replace(addr, r, "");
+		regex_search(s, gate, r);
+		gate_num = UTF8ToUnicode(gate.str());
+		addr = UTF8ToUnicode(regex_replace(s, r, ""));
 		return;
 	}
-	void provs_seperate()	//½âÎöÊ¡
+	void provs_seperate()	//è§£æžçœ
 	{
 		int flag;
 		for (int i = 0; i < 23; i++)
 		{
-			/*µØÖ·ÖÐ´ø"Ê¡"*/
-			string temp = provs[i].substr(0, provs[i].size() - 2); //ÌáÈ¡Ê¡·ÝÃû³Æ£¬ÀýÈç£º¸£½¨
+			/*åœ°å€ä¸­å¸¦"çœ"*/
+			wstring temp = provs[i].substr(0, provs[i].size() - 1); //æå–çœä»½åç§°ï¼Œä¾‹å¦‚ï¼šç¦å»º
 			if ((flag = addr.find(provs[i])) != -1)
 			{
 				pro = provs[i];
 				prov_tag = i;
-				addr.erase(flag, provs[i].size()); //²ÁÈ¥¡°Ê¡¡±
+				addr.erase(flag, provs[i].size()); //æ“¦åŽ»â€œçœâ€
 				return;
 			}
-			/*µØÖ·ÖÐ²»´ø"Ê¡"µÄÊ¡*/
+			/*åœ°å€ä¸­ä¸å¸¦"çœ"çš„çœ*/
 			else if ((flag = addr.find(temp)) != -1)
 			{
 				pro = provs[i];
 				prov_tag = i;
-				addr.erase(flag, temp.size()); //²ÁÈ¥¡°Ê¡¡±
+				addr.erase(flag, temp.size()); //æ“¦åŽ»â€œçœâ€
 				return;
 			}
-			/*Ö±Ï½ÊÐ*/
+			/*ç›´è¾–å¸‚*/
 			if (i < 4)
 			{
-				//temp = direct_city[i].substr(0, direct_city[i].size() - 2);//Æ¥ÅäÖ±Ï½ÊÐÈ«³Æ
+				//temp = direct_city[i].substr(0, direct_city[i].size() - 2);//åŒ¹é…ç›´è¾–å¸‚å…¨ç§°
 				if ((flag = addr.find(direct_city[i])) != -1)
 				{
 					pro = direct_city[i];
 					addr.erase(flag, direct_city[i].size());
-					prov_tag = i + 23;//Çø·ÖÖ±Ï½ÊÐ
+					prov_tag = i + 23;//åŒºåˆ†ç›´è¾–å¸‚
 					return;
 				}
 			}
 		}
 	}
-	void info_collect()//ÌáÈ¡µØÍ¼ÐÅÏ¢
+	void info_collect()//æå–åœ°å›¾ä¿¡æ¯
 	{
 		provs_seperate();
 		cities_seperate();
@@ -363,10 +374,10 @@ public:
 		gate_number();
 		detail_seperate();
 	}
-	string print_info()//Æß¼¶µØÖ·¸ñÊ½Êä³ö
+	wstring print_info()//ä¸ƒçº§åœ°å€æ ¼å¼è¾“å‡º
 	{
-		string address = "{\"ÐÕÃû\":\"" + name + "\",\"ÊÖ»ú\":\"" + tel_number + "\",\"µØÖ·\":[" + "\"" + pro + "\",\"" + Cities + "\",\""
-			+ country + "\",\"" + town + "\",\"" + road + "\",\"" + gate_num + "\",\"" + detail_addr + "\"]}";
+		wstring address = L"{\"å§“å\":\"" + name + L"\",\"æ‰‹æœº\":\"" + tel_number + L"\",\"åœ°å€\":[" + L"\"" + pro + L"\",\"" + Cities + L"\",\""
+			+ country + L"\",\"" + town + L"\",\"" + road + L"\",\"" + gate_num + L"\",\"" + detail_addr + L"\"]}";
 		//cout << address << endl;
 		return address;
 	}
@@ -375,10 +386,14 @@ public:
 
 int main(int argc, char **argv)
 {
+	/*wifstream input;
+	wofstream output;
+	input.open(argv[1]);
+	output.open(argv[2]);*/
 	ifstream input;
 	ofstream output;
-	input.open(argv[1]);
-	output.open(argv[2]);
+	input.open("E:\\SoftwareTest-1.0.0\\dl\\lxc\\input.txt");
+	output.open("E:\\SoftwareTest-1.0.0\\dl\\lxc\\output.txt");
 	vector<string> address;
 	int count = 0;
 	string s;
@@ -391,42 +406,52 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < count; i++)
 	{
-		addr = address[i];
-		string type = type_seperate();
-		string name = name_seperate();
-		string tel_number = Tel_num_analysis();
-
-		if (type == "1!")
+		addr = UTF8ToUnicode( address[i]);
+		wstring type = type_seperate();
+		wstring name = name_seperate();
+		wstring tel_number = Tel_num_analysis();
+		wstring t1 = L"1!",t2 = L"2!";
+		if (type.find(t1))
 		{
-			Five_addr_analysis add_analysis(name, tel_number); //´´½¨Îå¼¶µØÖ·¶ÔÏó
+			Five_addr_analysis add_analysis(name, tel_number); //åˆ›å»ºäº”çº§åœ°å€å¯¹è±¡
 			add_analysis.info_collect();
-			string info = add_analysis.print_info();
-			/*wstring t = utf8string2wstring(info);
-			info = wstring2string(t, "Chinese");*/
-			//Ð´ÈëÎÄ¼þ
+			wstring info = add_analysis.print_info();
+			//å†™å…¥æ–‡ä»¶
 			if (i != count - 1)
 			{
-				info += ",";
-				output << info << endl;
+				info += L",";
+				string inf = UnicodeToUTF8(info);
+				//cout << inf << endl;
+				output << inf << endl;
 			}
 			else
-				output << info << endl;
+			{
+				string inf = UnicodeToUTF8(info);
+				//cout << inf << endl;
+				output << inf << endl;
+			}
 		}
-		else if (type == "2!")
+		else if (type.find(t2))
 		{
-			Seven_addr_analysis add_analysis(name, tel_number);//´´½¨Æß¼¶µØÖ·¶ÔÏó
+			Seven_addr_analysis add_analysis(name, tel_number);//åˆ›å»ºä¸ƒçº§åœ°å€å¯¹è±¡
 			add_analysis.info_collect();
-			string info = add_analysis.print_info();
-			//Ð´ÈëÎÄ¼þ
+			wstring info = add_analysis.print_info();
+			//å†™å…¥æ–‡ä»¶
 			if (i != count - 1)
 			{
-				info += ",";
-				output << info << endl;
+				info += L",";
+				string inf = UnicodeToUTF8(info);
+				//cout << inf<<endl;
+				output << inf << endl;
 			}
 			else
-				output << info << endl;
+			{
+				string inf = UnicodeToUTF8(info);
+				//cout << inf<<endl;
+				output << inf << endl;
+			}
 		}
-		/*else if (type == "3!")
+		/*else if(type == L"3!")
 		{
 			output << "Cant' deal with case 3!" << endl;
 		}
@@ -439,30 +464,34 @@ int main(int argc, char **argv)
 	input.close();
 	output.close();
 
-		/*ifstream f("F:\\VS project\\test_date.txt");
-		ofstream o("F:\\VS project\\test_result_date.txt");
-		while (getline(f, addr))
+
+	/*fstream f("F:\\VS project\\test_date.txt");
+	ofstream o("F:\\VS project\\test_result_date.txt");
+	string s;
+	while (getline(f, s))
+	{
+		addr = UTF8ToUnicode(s);
+		//addr = L"1!å°å…²,è¥¿è—è‡ªæ²»åŒºæ‹‰è¨å¸‚åŸŽå…³åŒºä¸­è·¯35å·å¸ƒè¾¾æ‹‰å®«å†…12345678910.";
+		wstring type = type_seperate();
+		wstring name = name_seperate();
+		wstring tel_number = Tel_num_analysis();
+
+		if (type == L"1!")
 		{
-			string type = type_seperate();
-			string name = name_seperate();
-			string tel_number = Tel_num_analysis();
-
-			if (type == "1!")
-			{
-				Five_addr_analysis add_analysis(name, tel_number); //´´½¨Îå¼¶µØÖ·¶ÔÏó
-				add_analysis.info_collect();
-				add_analysis.print_info();
-			}
-			else if (type == "2!" || type == "3!")
-			{
-				Seven_addr_analysis add_analysis(name, tel_number);//´´½¨Æß¼¶µØÖ·¶ÔÏó
-				add_analysis.info_collect();
-				add_analysis.print_info();
-			}
-
+			Five_addr_analysis add_analysis(name, tel_number); //åˆ›å»ºäº”çº§åœ°å€å¯¹è±¡
+			add_analysis.info_collect();
+			add_analysis.print_info();
 		}
-		f.close();
-		system("pause");
-		*/
-		return 0;
+		else if (type == L"2!")
+		{
+			Seven_addr_analysis add_analysis(name, tel_number);//åˆ›å»ºä¸ƒçº§åœ°å€å¯¹è±¡
+			add_analysis.info_collect();
+			add_analysis.print_info();
+		}
+
+	}
+	f.close();*/
+	system("pause");
+	
+	return 0;
 }
