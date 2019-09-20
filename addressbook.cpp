@@ -54,15 +54,6 @@ L"拉萨市",L"山南地区",L"林芝地区",L"日喀则地区",L"阿里地区",
 
 wstring type_seperate()			//地址类型解析
 {
-	/*regex r("^\\d!");
-	smatch t;
-	regex_search(addr, t, r);
-	string type = t.str();
-	addr = regex_replace(addr, r, "");*/
-	/*string type;
-	type = addr.substr(0, 1);
-	addr.replace(0, 2, "");
-	*/
 	wstring type = addr.substr(0, addr.find(L"!") + 1);
 	addr = addr.erase(0, addr.find(L"!")+1);
 	return type;
@@ -411,7 +402,7 @@ int main(int argc, char **argv)
 		wstring name = name_seperate();
 		wstring tel_number = Tel_num_analysis();
 		wstring t1 = L"1!",t2 = L"2!";
-		if (type.find(t1))
+		if (type.find==t1)
 		{
 			Five_addr_analysis add_analysis(name, tel_number); //创建五级地址对象
 			add_analysis.info_collect();
@@ -431,7 +422,7 @@ int main(int argc, char **argv)
 				output << inf << endl;
 			}
 		}
-		else if (type.find(t2))
+		else if (type.find==t2)
 		{
 			Seven_addr_analysis add_analysis(name, tel_number);//创建七级地址对象
 			add_analysis.info_collect();
@@ -490,8 +481,8 @@ int main(int argc, char **argv)
 		}
 
 	}
-	f.close();*/
-	system("pause");
+	f.close();
+	system("pause");*/
 	
 	return 0;
 }
