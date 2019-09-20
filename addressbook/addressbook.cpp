@@ -1,89 +1,92 @@
-﻿#include <iostream>
+#include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <cstdio>
 #include <string>
 #include <vector>
 #include <regex>
+#include <codecvt>
+#include "head.h"
 using namespace std;
 
-string addr;	//地址变量
-string direct_city[4] = { "北京市","上海市","天津市","重庆市" };//直辖市
-string direct_cities[4][40] = {
-	"朝阳区","海淀区","通州区","房山区","丰台区","昌平区","大兴区","顺义区","西城区","延庆县","石景山区","宣武区","怀柔区","崇文区","密云县","东城区","门头沟区","平谷区","","","","","","","",  "","","","","","","","","","","","","","","",\
-	"松江区","宝山区","金山区","嘉定区","南汇区","青浦区","浦东新区","奉贤区","闵行区","徐汇区","静安区","黄浦区","普陀区","杨浦区","虹口区","闸北区","长宁区","崇明县","卢湾区","","","","","","",  "","","","","","","","","","","","","","","",\
-	"和平区","北辰区","河北区","河西区","西青区","津南区","东丽区","武清区","宝坻区","红桥区","大港区","汉沽区","静海县","宁河县","塘沽区","蓟县","南开区","河东区","","","","","","","", "","","","","","","","","","","","","","","",\
-	"江北区", "渝北区", "沙坪坝区", "九龙坡区", "万州区", "永川市", "南岸区", "酉阳县", "北碚区", "涪陵区", "秀山县", "巴南区", "渝中区", "石柱县", "忠县", "合川市", "大渡口区", "开县", "长寿区", "荣昌县", "云阳县", "梁平县", "潼南县", "江津市", "彭水县", "璧山县", "綦江县", "大足县", "黔江区", "巫溪县", "巫山县", "垫江县", "丰都县", "武隆县", "万盛区", "铜梁县", "南川市", "奉节县", "双桥区", "城口县"
+wstring addr;	//地址变量
+wstring direct_city[4] = { L"北京市",L"上海市",L"天津市",L"重庆市" };//直辖市
+wstring direct_cities[4][40] = {
+	L"朝阳区",L"海淀区",L"通州区",L"房山区",L"丰台区",L"昌平区",L"大兴区",L"顺义区",L"西城区",L"延庆县",L"石景山区",L"宣武区",L"怀柔区",L"崇文区",L"密云县",L"东城区",L"门头沟区",L"平谷区",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+		L"松江区",L"宝山区",L"金山区",L"嘉定区",L"南汇区",L"青浦区",L"浦东新区",L"奉贤区",L"闵行区",L"徐汇区",L"静安区",L"黄浦区",L"普陀区",L"杨浦区",L"虹口区",L"闸北区",L"长宁区",L"崇明县",L"卢湾区",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+		L"和平区",L"北辰区",L"河北区",L"河西区",L"西青区",L"津南区",L"东丽区",L"武清区",L"宝坻区",L"红桥区",L"大港区",L" 汉沽区",L"静海县",L"宁河县",L"塘沽区",L"蓟县",L"南开区",L"河东区",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+		L"江北区",L"渝北区",L"沙坪坝区",L"九龙坡区",L"万州区",L"永川市",L"南岸区",L"酉阳县",L"北碚区",L"涪陵区",L"秀山县",L"巴南区",L"渝中区",L"石柱县",L"忠县",L"合川市",L"大渡口区",L"开县",L"长寿区",L"荣昌县",L"云阳县",L"梁平县",L"潼南县",L"江津市",L"彭水县",L"璧山县",L"綦江县",L"大足县",L"黔江区",L"巫溪县",
+			L"巫山县", L"垫江县", L"丰都县", L"武隆县", L"万盛区", L"铜梁县", L"南川市", L"奉节县", L"双桥区", L"城口县" };
+wstring provs[23] = { L"河北省",L"山西省",L"辽宁省",L"吉林省",L"黑龙江省",L"江苏省",L"浙江省",L"安徽省",L"福建省",L"江西省",L"山东省",L"河南省",L"湖北省",L"湖南省",L"广东省",L"海南省",L"四川省",L"贵州省",L"云南省",L"陕西省",L"甘肃省",L"青海省",L"台湾省" };									//全国各省
+wstring cities[23][30] =
+{ L"石家庄市",L"唐山市",L"保定市",L"邯郸市",L"邢台市",L"河北区",L"沧州市",L"秦皇岛市",L"张家口市",L"衡水市",L"廊坊市",L"承德市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"太原市",L"大同市",L"运城市",L"长治市",L"晋城市",L"忻州市",L"临汾市",L"吕梁市",L"晋中市",L"阳泉市",L"朔州市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"大连市",L"沈阳市",L"丹东市",L"辽阳市",L"葫芦岛市",L"锦州市",L"朝阳市",L"营口市",L"鞍山市",L"抚顺市",L"阜新市",L"本溪市",L"盘锦市",L"铁岭市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"吉林市",L"长春市",L"白山市",L"白城市",L"延边州",L"松原市",L"辽源市",L"通化市",L"四平市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"齐齐哈尔市",L"哈尔滨市",L"大庆市",L"佳木斯市",L"双鸭山市",L"牡丹江市",L"鸡西市",L"黑河市",L"绥化市",L"鹤岗市",L"伊春市",L"大兴安岭地区",L"七台河市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"苏州市",L"徐州市",L"盐城市",L"无锡市",L"南京市",L"南通市",L"连云港市",L"常州市",L"扬州市",L"镇江市",L"淮安市",L"泰州市",L"宿迁市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"温州市",L"宁波市",L"杭州市",L"台州市",L"嘉兴市",L"金华市",L"湖州市",L"绍兴市",L"舟山市",L"丽水市",L"衢州市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"芜湖市",L"合肥市",L"六安市",L"宿州市",L"阜阳市",L"安庆市",L"马鞍山市",L"蚌埠市",L"淮北市",L"淮南市",L"宣城市",L"黄山市",L"铜陵市",L"亳州市",L"池州市",L"巢湖市",L"滁州市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"漳州市",L"泉州市",L"厦门市",L"福州市",L"莆田市",L"宁德市",L"三明市",L"南平市",L"龙岩市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"南昌市",L"赣州市",L"上饶市",L"吉安市",L"九江市",L"新余市",L"抚州市",L"宜春市",L"景德镇市",L"萍乡市",L"鹰潭市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"济南市",L"青岛市",L"临沂市",L"济宁市",L"菏泽市",L"烟台市",L"泰安市",L"淄博市",L"潍坊市",L"日照市",L"威海市",L"滨州市",L"东营市",L"聊城市",L"德州市",L"莱芜市",L"枣庄市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"郑州市",L"南阳市",L"新乡市",L"安阳市",L"洛阳市",L"信阳市",L"平顶山市",L"周口市",L"商丘市",L"开封市",L"焦作市",L"驻马店市",L"濮阳市",L"三门峡市",L"漯河市",L"许昌市",L"鹤壁市",L"济源市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"武汉市",L"宜昌市",L"襄樊市",L"荆州市",L"恩施州",L"孝感市",L"黄冈市",L"十堰市",L"咸宁市",L"黄石市",L"仙桃市",L"随州市",L"天门市",L"荆门市",L"潜江市",L"鄂州市",L"神农架林区",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"长沙市",L"邵阳市",L"常德市",L"衡阳市",L"株洲市",L"湘潭市",L"永州市",L"岳阳市",L"怀化市",L"郴州市",L"娄底市",L"益阳市",L"张家界市",L"湘西州",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",""
+L"东莞市",L"广州市",L"中山市",L"深圳市",L"惠州市",L"江门市",L"珠海市",L"汕头市",L"佛山市",L"湛江市",L"河源市",L"肇庆市",L"潮州市",L"清远市",L"韶关市",L"揭阳市",L"阳江市",L"云浮市",L"茂名市",L"梅州市",L"汕尾市",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"三亚市",L"海口市",L"琼海市",L"文昌市",L"东方市",L"昌江县",L"陵水县",L"乐东县",L"五指山市",L"保亭县",L"澄迈县",L"万宁市",L"儋州市",L"临高县",L"白沙县",L"定安县",L"琼中县",L"屯昌县",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"成都市",L"绵阳市",L"广元市",L"达州市",L"南充市",L"德阳市",L"广安市",L"阿坝州",L"巴中市",L"遂宁市",L"内江市",L"凉山州",L"攀枝花市",L"乐山市",L"自贡市",L"泸州市",L"雅安市",L"宜宾市",L"资阳市",L"眉山市",L"甘孜州",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"贵阳市",L"黔东南州",L"黔南州",L"遵义市",L"黔西南州",L"毕节地区",L"铜仁地区",L"安顺市",L"六盘水市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"昆明市",L"红河州",L"大理州",L"文山州",L"德宏州",L"曲靖市",L"昭通市",L"楚雄州",L"保山市",L"玉溪市",L"丽江地区",L"临沧地区",L"思茅地区",L"西双版纳州",L"怒江州",L"迪庆州",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"西安市",L"咸阳市",L"宝鸡市",L"汉中市",L"渭南市",L"安康市",L"榆林市",L"商洛市",L"延安市",L"铜川市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"兰州市",L"天水市",L"庆阳市",L"武威市",L"酒泉市",L"张掖市",L"陇南地区",L"白银市",L"定西地区",L"平凉市",L"嘉峪关市",L"临夏回族自治州",L"金昌市",L"甘南州",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"西宁市",L"海西州",L"海东地区",L"海北州",L"果洛州",L"玉树州",L"黄南藏族自治州",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"台北市",L"高雄市",L"台中市",L"新竹市",L"基隆市",L"台南市",L"嘉义市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L""
 };
-string provs[23] = { "河北省", "山西省", "辽宁省", "吉林省", "黑龙江省", \
-	"江苏省", "浙江省", "安徽省", "福建省", "江西省", "山东省", "河南省",\
-	"湖北省", "湖南省", "广东省", "海南省", "四川省", "贵州省", "云南省",\
-	"陕西省", "甘肃省", "青海省", "台湾省" };									//全国各省
-string cities[23][30] =
-{ "石家庄市","唐山市","保定市","邯郸市","邢台市","河北区","沧州市","秦皇岛市","张家口市","衡水市","廊坊市","承德市","","","","","","","","","","","","","","","","","","",\
-   "太原市","大同市","运城市","长治市","晋城市","忻州市","临汾市","吕梁市","晋中市","阳泉市","朔州市","","","","","","","","","","","","","","","","","","","",\
-   "大连市","沈阳市","丹东市","辽阳市","葫芦岛市","锦州市","朝阳市","营口市","鞍山市","抚顺市","阜新市","本溪市"," 盘锦市","铁岭市","","","","","","","","","","","","","","","","",\
-	"吉林市","长春市","白山市","白城市","延边州","松原市","辽源市","通化市","四平市","","","","","","","","","","","","","","","","","","","","","",\
-	"齐齐哈尔市","哈尔滨市","大庆市","佳木斯市","双鸭山市","牡丹江市","鸡西市","黑河市","绥化市","鹤岗市","伊春市","大兴安岭地区","七台河市","","","","","","","","","","","","","","","","","",\
-	"苏州市","徐州市","盐城市","无锡市","南京市","南通市","连云港市","常州市","扬州市","镇江市","淮安市","泰州市"," 宿迁市","","","","","","","","","","","","","","","","","",\
-	"温州市","宁波市","杭州市","台州市","嘉兴市","金华市","湖州市","绍兴市","舟山市","丽水市","衢州市","","","","","","","","","","","","","","","","","","","",\
-	"芜湖市","合肥市","六安市","宿州市","阜阳市","安庆市","马鞍山市","蚌埠市","淮北市","淮南市","宣城市","黄山市"," 铜陵市","亳州市","池州市","巢湖市","滁州市","","","","","","","","","","","","","",\
-	"漳州市","泉州市","厦门市","福州市","莆田市","宁德市","三明市","南平市","龙岩市","","","","","","","","","","","","","","","","","","","","","",\
-	"南昌市","赣州市","上饶市","吉安市","九江市","新余市","抚州市","宜春市","景德镇市","萍乡市","鹰潭市","","","","","","","","","","","","","","","","","","","",\
-	"济南市","青岛市","临沂市","济宁市","菏泽市","烟台市","泰安市","淄博市","潍坊市","日照市","威海市","滨州市","东营市","聊城市","德州市","莱芜市","枣庄市","","","","","","","","","","","","","",\
-	"郑州市","南阳市","新乡市","安阳市","洛阳市","信阳市","平顶山市","周口市","商丘市","开封市","焦作市","驻马店市","濮阳市","三门峡市","漯河市","许昌市","鹤壁市","济源市","","","","","","","","","","","","",\
-	"武汉市","宜昌市","襄樊市","荆州市","恩施州","孝感市","黄冈市","十堰市","咸宁市","黄石市","仙桃市","随州市","天门市","荆门市","潜江市","鄂州市","神农架林区","","","","","","","","","","","","","",\
-	"长沙市","邵阳市","常德市","衡阳市","株洲市","湘潭市","永州市","岳阳市","怀化市","郴州市","娄底市","益阳市","张家界市","湘西州","","","","","","","","","","","","","","","","",""\
-	"东莞市","广州市","中山市","深圳市","惠州市","江门市","珠海市","汕头市","佛山市","湛江市","河源市","肇庆市","潮州市","清远市","韶关市","揭阳市","阳江市","云浮市","茂名市","梅州市","汕尾市","","","","","","","","","",\
-	"三亚市","海口市","琼海市","文昌市","东方市","昌江县","陵水县","乐东县","五指山市","保亭县","澄迈县","万宁市","儋州市","临高县","白沙县","定安县","琼中县","屯昌县","","","","","","","","","","","","",\
-	"成都市","绵阳市","广元市","达州市","南充市","德阳市","广安市","阿坝州","巴中市","遂宁市","内江市","凉山州","攀枝花市","乐山市","自贡市","泸州市","雅安市","宜宾市","资阳市","眉山市","甘孜州","","","","","","","","","",\
-	"贵阳市","黔东南州","黔南州","遵义市","黔西南州","毕节地区","铜仁地区","安顺市","六盘水市","","","","","","","","","","","","","","","","","","","","","",\
-	"昆明市","红河州","大理州","文山州","德宏州","曲靖市","昭通市","楚雄州","保山市","玉溪市","丽江地区","临沧地区","思茅地区","西双版纳州","怒江州","迪庆州","","","","","","","","","","","","","","",\
-	"西安市","咸阳市","宝鸡市","汉中市","渭南市","安康市","榆林市","商洛市","延安市","铜川市","","","","","","","","","","","","","","","","","","","","",\
-	"兰州市","天水市","庆阳市","武威市","酒泉市","张掖市","陇南地区","白银市","定西地区","平凉市","嘉峪关市","临夏回族自治州","金昌市","甘南州","","","","","","","","","","","","","","","","",\
-	"西宁市","海西州","海东地区","海北州","果洛州","玉树州","黄南藏族自治州","","","","","","","","","","","","","","","","","","","","","","","",\
-	"台北市","高雄市","台中市","新竹市","基隆市","台南市","嘉义市","","","","","","","","","","","","","","","","","","","","","","",""\
-};
-string zzq[5] = { "广西壮族自治区","内蒙古自治区","新疆维吾尔自治区","宁夏回族自治区","西藏自治区" };//自治区
-string zzq_cities[5][18] = {
-	"贵港市","玉林市","北海市","南宁市","柳州市","桂林市","梧州市","钦州市","来宾市","河池市","百色市","贺州市","崇左市","防城港市","","","","",\
-	"赤峰市", "包头市", "通辽市", "呼和浩特市", "乌海市", "鄂尔多斯市", "呼伦贝尔市", "兴安盟", "巴彦淖尔盟", "乌兰察布盟", "锡林郭勒盟", "阿拉善盟", "", "", "", "", "", "",\
-	"乌鲁木齐市", "伊犁州", "昌吉州", "石河子市", "哈密地区", "阿克苏地区", "巴音郭楞州", "喀什地区", "塔城地区", "克拉玛依市", "和田地区", "阿勒泰州", "吐鲁番地区", "阿拉尔市", "博尔塔拉州", "五家渠市", "克孜勒苏州", "图木舒克市",\
-	"银川市", "吴忠市", "中卫市", "石嘴山市", "固原市", "", "", "", "", "", "", "", "", "", "", "", "", "",\
-	"拉萨市", "山南地区", "林芝地区", "日喀则地区", "阿里地区", "昌都地区", "那曲地区", "", "", "", "", "", "", "", "", "", ""
+wstring zzq[5] = { L"广西壮族自治区",L"内蒙古自治区",L"新疆维吾尔自治区",L"宁夏回族自治区",L"西藏自治区" };//自治区
+wstring zzq_cities[5][18] = {
+	L"贵港市",L"玉林市",L"北海市",L"南宁市",L"柳州市",L"桂林市",L"梧州市",L"钦州市",L"来宾市",L"河池市",L"百色市",L"贺州市",L"崇左市",L"防城港市",L"",L"",L"",L"",
+L"赤峰市",L"包头市",L"通辽市",L"呼和浩特市",L"乌海市",L"鄂尔多斯市",L"呼伦贝尔市",L"兴安盟",L"巴彦淖尔盟",L"乌兰察布盟",L"锡林郭勒盟",L"阿拉善盟",L"",L"",L"",L"",L"",L"",
+L"乌鲁木齐市",L"伊犁州",L"昌吉州",L"石河子市",L"哈密地区",L"阿克苏地区",L"巴音郭楞州",L"喀什地区",L"塔城地区",L"克拉玛依市",L"和田地区",L"阿勒泰州",L"吐鲁番地区",L"阿拉尔市",L"博尔塔拉州",L"五家渠市",L"克孜勒苏州",L"图木舒克市",
+L"银川市",L"吴忠市",L"中卫市",L"石嘴山市",L"固原市",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",L"",
+L"拉萨市",L"山南地区",L"林芝地区",L"日喀则地区",L"阿里地区",L"昌都地区",L"那曲地区",L"",L"",L"",L"",L"",L"",L"",L"",L"",L""
 };//自治区城市
 
-string type_seperate()			//地址类型解析
+wstring type_seperate()			//地址类型解析
 {
-	regex r("^\\d!");
+	/*regex r("^\\d!");
 	smatch t;
 	regex_search(addr, t, r);
 	string type = t.str();
-	addr = regex_replace(addr, r, "");
+	addr = regex_replace(addr, r, "");*/
 	/*string type;
 	type = addr.substr(0, 1);
 	addr.replace(0, 2, "");
 	*/
+	wstring type = addr.substr(0, addr.find(L"!") + 1);
+	addr = addr.erase(0, addr.find(L"!")+1);
 	return type;
 }
 
-string name_seperate() //解析姓名
+wstring name_seperate() //解析姓名
 {
-	int flag = addr.find(',');
-	string name = addr.substr(0, flag);
-	addr.replace(0, flag, "");	//解析出姓名后将姓名擦去
-	addr.erase(addr.find("."), 1); //擦去 '.'
-	addr.erase(addr.find(","), 1); //擦去 ','
+	int flag = addr.find(L',');
+	wstring name = addr.substr(0, flag);
+	addr.erase(0, flag);	//解析出姓名后将姓名擦去
+	addr.erase(addr.find(L"."), 1); //擦去 '.'
+	addr.erase(addr.find(L","), 1); //擦去 ','
 	return name;
 }
 
-string Tel_num_analysis()//提取11位电话号码
+wstring Tel_num_analysis()//提取11位电话号码
 {
 	smatch t;
 	regex r("\\d{11}");
-	regex_search(addr, t, r);
-	string Tel_number = t.str();
-	addr = regex_replace(addr, r, "");
+	string s = UnicodeToUTF8(addr);
+	regex_search(s, t, r);
+	wstring Tel_number = UTF8ToUnicode(t.str());
+	s = regex_replace(s, r, "");
+	addr = UTF8ToUnicode(s);
 
 	return Tel_number;
 };
@@ -91,14 +94,14 @@ string Tel_num_analysis()//提取11位电话号码
 class Five_addr_analysis		//五位地址解析
 {
 public:
-	string name, tel_number, pro, Cities, country, town, detail_addr;
+	wstring name, tel_number, pro, Cities, country, town, detail_addr;
 	int prov_tag;	//省份对应下标
-	Five_addr_analysis(string Name, string Tel_num)
+	Five_addr_analysis(wstring Name, wstring Tel_num)
 	{
 		prov_tag = 0;
 		name = Name;
 		tel_number = Tel_num;
-		pro = Cities = country = town = detail_addr = "";
+		pro = Cities = country = town = detail_addr = L"";
 	}
 	void provs_seperate()//解析省
 	{
@@ -106,7 +109,7 @@ public:
 		for (int i = 0; i < 23; i++)
 		{
 			/*地址中带"省"*/
-			string temp = provs[i].substr(0, provs[i].size() - 2); //提取省份名称，例如：福建
+			wstring temp = provs[i].substr(0, provs[i].size() - 1); //提取省份名称，例如：福建
 			if ((flag = addr.find(provs[i])) != -1)
 			{
 				pro = provs[i];
@@ -134,7 +137,7 @@ public:
 					prov_tag = i + 23;//区分直辖市
 					return;
 				}
-				temp = direct_city[i].substr(0, direct_city[i].size() - 2);//提取直辖市名称,例如：北京
+				temp = direct_city[i].substr(0, direct_city[i].size() - 1);//提取直辖市名称,例如：北京
 				if ((flag = addr.find(temp)) != -1)
 				{
 					pro = direct_city[i];
@@ -151,7 +154,7 @@ public:
 					prov_tag = i + 27;//区分自治区
 					return;
 				}
-				temp = zzq[i].substr(0, zzq[i].size() - 6);//提取自治区名字如内蒙古
+				temp = zzq[i].substr(0, zzq[i].size() - 3);//提取自治区名字如内蒙古
 				if ((flag = addr.find(temp)) != -1)
 				{
 					pro = zzq[i];
@@ -171,7 +174,7 @@ public:
 					prov_tag = i + 27;//区分自治区
 					return;
 				}
-				temp = zzq[i].substr(0, zzq[i].size() - 6);//提取自治区名字西藏
+				temp = zzq[i].substr(0, zzq[i].size() - 3);//提取自治区名字西藏
 				if ((flag = addr.find(temp)) != -1)
 				{
 					pro = zzq[i];
@@ -198,7 +201,7 @@ public:
 				/*地址中不带"市"*/
 				else
 				{
-					string temp = cities[prov_tag][i].substr(0, cities[prov_tag][i].size() - 2);
+					wstring temp = cities[prov_tag][i].substr(0, cities[prov_tag][i].size() - 1);
 					if ((flag = addr.find(temp)) != -1)
 					{
 						Cities = cities[prov_tag][i];
@@ -219,7 +222,7 @@ public:
 					addr.erase(flag, Cities.size());
 					return;
 				}
-				string t = direct_cities[prov_tag][j].substr(0, direct_cities[prov_tag][j].size() - 2);
+				wstring t = direct_cities[prov_tag][j].substr(0, direct_cities[prov_tag][j].size() - 1);
 				if ((flag = addr.find(t)) != -1)
 				{
 					Cities = direct_cities[prov_tag][j];
@@ -239,7 +242,7 @@ public:
 					addr.erase(flag, Cities.size());
 					return;
 				}
-				string t = zzq_cities[prov_tag][j].substr(0, zzq_cities[prov_tag][j].size() - 2);
+				wstring t = zzq_cities[prov_tag][j].substr(0, zzq_cities[prov_tag][j].size() - 1);
 				if ((flag = addr.find(t)) != -1)
 				{
 					Cities = zzq_cities[prov_tag][j];
@@ -258,19 +261,25 @@ public:
 	}
 	void counties_seperate()//解析县/区/县级市
 	{
+		string s = UnicodeToUTF8(addr);
 		regex r(".*?(区|县|市)");
 		smatch Country;
-		regex_search(addr, Country, r);//解析到县/区/县级市
-		country += Country.str();
-		addr = regex_replace(addr, r, "");
+		regex_search(s, Country, r);//解析到县/区/县级市
+		string country1;
+		country1 += Country.str();
+		country = UTF8ToUnicode(country1);
+		s = regex_replace(s, r, "");
+		addr = UTF8ToUnicode(s);
 	}
 	void towns_seperate()//解析街道/镇/乡
 	{
+		string s = UnicodeToUTF8(addr);
 		regex r(".+((街道)|镇|乡)");
 		smatch Town;
-		regex_search(addr, Town, r);//解析到街道/乡/镇
-		town = Town.str();		//保存到town中
-		addr = regex_replace(addr, r, "");
+		regex_search(s, Town, r);//解析到街道/乡/镇
+		town = UTF8ToUnicode(Town.str());		//保存到town中
+		s = regex_replace(s, r, "");
+		addr = UTF8ToUnicode(s);
 		return;
 	}
 	void detail_seperate()//解析 详细地址
@@ -285,10 +294,10 @@ public:
 		towns_seperate();
 		detail_seperate();
 	}
-	string print_info()	//五级地址格式输出
+	wstring print_info()	//五级地址格式输出
 	{
-		string address = "{\"姓名\":\"" + name + "\",\"手机\":\"" + tel_number + "\",\"地址\":[" + "\"" + pro + "\",\"" + Cities + "\",\""
-			+ country + "\",\"" + town + "\",\"" + detail_addr + "\"]}";
+		wstring address = L"{\"姓名\":\"" + name + L"\",\"手机\":\"" + tel_number + L"\",\"地址\":[" + L"\"" + pro + L"\",\"" + Cities + L"\",\""
+			+ country + L"\",\"" + town + L"\",\"" + detail_addr + L"\"]}";
 		//cout << address << endl;
 		return address;
 	}
@@ -297,24 +306,26 @@ public:
 class Seven_addr_analysis :public Five_addr_analysis
 {
 public:
-	string road, gate_num;
-	Seven_addr_analysis(string name, string tel_number) :Five_addr_analysis(name, tel_number) { road = gate_num = ""; }
+	wstring road, gate_num;
+	Seven_addr_analysis(wstring name, wstring tel_number) :Five_addr_analysis(name, tel_number) { road = gate_num = L""; }
 	void road_seperate()//解析路
 	{
+		string s = UnicodeToUTF8(addr);
 		regex r(".+(路|街|巷|(胡同)|里)");
 		smatch Road;
-		regex_search(addr, Road, r);
-		road = Road.str();
-		addr = regex_replace(addr, r, "");
+		regex_search(s, Road, r);
+		road = UTF8ToUnicode(Road.str());
+		addr = UTF8ToUnicode(regex_replace(s, r, ""));
 		return;
 	}
 	void gate_number()//解析门牌号
 	{
+		string s = UnicodeToUTF8(addr);
 		regex r(".+(号)");
 		smatch gate;
-		regex_search(addr, gate, r);
-		gate_num = gate.str();
-		addr = regex_replace(addr, r, "");
+		regex_search(s, gate, r);
+		gate_num = UTF8ToUnicode(gate.str());
+		addr = UTF8ToUnicode(regex_replace(s, r, ""));
 		return;
 	}
 	void provs_seperate()	//解析省
@@ -323,7 +334,7 @@ public:
 		for (int i = 0; i < 23; i++)
 		{
 			/*地址中带"省"*/
-			string temp = provs[i].substr(0, provs[i].size() - 2); //提取省份名称，例如：福建
+			wstring temp = provs[i].substr(0, provs[i].size() - 1); //提取省份名称，例如：福建
 			if ((flag = addr.find(provs[i])) != -1)
 			{
 				pro = provs[i];
@@ -363,10 +374,10 @@ public:
 		gate_number();
 		detail_seperate();
 	}
-	string print_info()//七级地址格式输出
+	wstring print_info()//七级地址格式输出
 	{
-		string address = "{\"姓名\":\"" + name + "\",\"手机\":\"" + tel_number + "\",\"地址\":[" + "\"" + pro + "\",\"" + Cities + "\",\""
-			+ country + "\",\"" + town + "\",\"" + road + "\",\"" + gate_num + "\",\"" + detail_addr + "\"]}";
+		wstring address = L"{\"姓名\":\"" + name + L"\",\"手机\":\"" + tel_number + L"\",\"地址\":[" + L"\"" + pro + L"\",\"" + Cities + L"\",\""
+			+ country + L"\",\"" + town + L"\",\"" + road + L"\",\"" + gate_num + L"\",\"" + detail_addr + L"\"]}";
 		//cout << address << endl;
 		return address;
 	}
@@ -375,10 +386,14 @@ public:
 
 int main(int argc, char **argv)
 {
+	/*wifstream input;
+	wofstream output;
+	input.open(argv[1]);
+	output.open(argv[2]);*/
 	ifstream input;
 	ofstream output;
-	input.open(argv[1]);
-	output.open(argv[2]);
+	input.open("E:\\SoftwareTest-1.0.0\\dl\\lxc\\input.txt");
+	output.open("E:\\SoftwareTest-1.0.0\\dl\\lxc\\output.txt");
 	vector<string> address;
 	int count = 0;
 	string s;
@@ -391,43 +406,92 @@ int main(int argc, char **argv)
 
 	for (int i = 0; i < count; i++)
 	{
-		addr = address[i];
-		string type = type_seperate();
-		string name = name_seperate();
-		string tel_number = Tel_num_analysis();
-
-		if (type == "1!")
+		addr = UTF8ToUnicode( address[i]);
+		wstring type = type_seperate();
+		wstring name = name_seperate();
+		wstring tel_number = Tel_num_analysis();
+		wstring t1 = L"1!",t2 = L"2!";
+		if (type.find(t1))
 		{
 			Five_addr_analysis add_analysis(name, tel_number); //创建五级地址对象
 			add_analysis.info_collect();
-			string info = add_analysis.print_info();
+			wstring info = add_analysis.print_info();
 			//写入文件
 			if (i != count - 1)
 			{
-				info += ",";
-				output << info << endl;
+				info += L",";
+				string inf = UnicodeToUTF8(info);
+				//cout << inf << endl;
+				output << inf << endl;
 			}
 			else
-				output << info << endl;
+			{
+				string inf = UnicodeToUTF8(info);
+				//cout << inf << endl;
+				output << inf << endl;
+			}
 		}
-		else if (type == "2!")
+		else if (type.find(t2))
 		{
 			Seven_addr_analysis add_analysis(name, tel_number);//创建七级地址对象
 			add_analysis.info_collect();
-			string info = add_analysis.print_info();
+			wstring info = add_analysis.print_info();
 			//写入文件
 			if (i != count - 1)
 			{
-				info += ",";
-				output << info << endl;
+				info += L",";
+				string inf = UnicodeToUTF8(info);
+				//cout << inf<<endl;
+				output << inf << endl;
 			}
 			else
-				output << info << endl;
+			{
+				string inf = UnicodeToUTF8(info);
+				//cout << inf<<endl;
+				output << inf << endl;
+			}
 		}
-		
+		/*else if(type == L"3!")
+		{
+			output << "Cant' deal with case 3!" << endl;
+		}
+		else
+		{
+			output << "Type Wrong!" << endl;
+		}*/
 	}
 	output << "]" << endl;
 	input.close();
 	output.close();
-		return 0;
+
+
+	/*fstream f("F:\\VS project\\test_date.txt");
+	ofstream o("F:\\VS project\\test_result_date.txt");
+	string s;
+	while (getline(f, s))
+	{
+		addr = UTF8ToUnicode(s);
+		//addr = L"1!小兲,西藏自治区拉萨市城关区中路35号布达拉宫内12345678910.";
+		wstring type = type_seperate();
+		wstring name = name_seperate();
+		wstring tel_number = Tel_num_analysis();
+
+		if (type == L"1!")
+		{
+			Five_addr_analysis add_analysis(name, tel_number); //创建五级地址对象
+			add_analysis.info_collect();
+			add_analysis.print_info();
+		}
+		else if (type == L"2!")
+		{
+			Seven_addr_analysis add_analysis(name, tel_number);//创建七级地址对象
+			add_analysis.info_collect();
+			add_analysis.print_info();
+		}
+
+	}
+	f.close();*/
+	system("pause");
+	
+	return 0;
 }
