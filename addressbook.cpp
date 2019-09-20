@@ -386,14 +386,14 @@ public:
 
 int main(int argc, char **argv)
 {
-	/*wifstream input;
-	wofstream output;
-	input.open(argv[1]);
-	output.open(argv[2]);*/
 	ifstream input;
 	ofstream output;
+	input.open(argv[1]);
+	output.open(argv[2]);
+	/*ifstream input;
+	ofstream output;
 	input.open("E:\\SoftwareTest-1.0.0\\dl\\lxc\\input.txt");
-	output.open("E:\\SoftwareTest-1.0.0\\dl\\lxc\\output.txt");
+	output.open("E:\\SoftwareTest-1.0.0\\dl\\lxc\\output.txt");*/
 	vector<string> address;
 	int count = 0;
 	string s;
