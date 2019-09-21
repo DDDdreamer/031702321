@@ -377,14 +377,14 @@ public:
 
 int main(int argc, char **argv)
 {
-	/*ifstream input;
-	ofstream output;
-	input.open(argv[1]);
-	output.open(argv[2]);*/
 	ifstream input;
 	ofstream output;
+	input.open(argv[1]);
+	output.open(argv[2]);
+	/*ifstream input;
+	ofstream output;
 	input.open("F:\\input.txt");
-	output.open("F:\\output.txt");
+	output.open("F:\\output.txt");*/
 	vector<string> address;
 	int count = 0;
 	string s;
@@ -422,7 +422,7 @@ int main(int argc, char **argv)
 				output << inf << endl;
 			}
 		}
-		else if (type==t2)
+		else
 		{
 			Seven_addr_analysis add_analysis(name, tel_number);//创建七级地址对象
 			add_analysis.info_collect();
